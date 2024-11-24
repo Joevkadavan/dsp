@@ -1,0 +1,43 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Specifications
+fs = 1000  # Sampling frequency
+fc = 200   # Cutoff frequency
+N = 21     # Filter length
+M = (N - 1) // 2
+
+# Ideal impulse response
+n = np.arange(-M, M + 1)  # Index range
+hd = np.sinc(2 * fc * n / fs)  # Ideal impulse response (sinc)
+
+# Rectangular window
+w = np.ones(N)  # Rectangular window
+h = hd * w  # Apply window
+
+# Frequency response
+H = np.fft.fft(h, 512)  # FFT for frequency response
+H = np.abs(H[:256])     # Take magnitude (half spectrum)
+freq = np.linspace(0, fs / 2, 256)  # Frequency axis
+
+# Plot results
+plt.figure(figsize=(12, 6))
+
+# Impulse Response
+plt.subplot(2, 1, 1)
+plt.stem(n, h, basefmt=" ", use_line_collection=True)
+plt.title("Impulse Response (h[n])")
+plt.xlabel("n")
+plt.ylabel("Amplitude")
+plt.grid()
+
+# Frequency Response
+plt.subplot(2, 1, 2)
+plt.plot(freq, 20 * np.log10(H / max(H)))  # Normalize and convert to dB
+plt.title("Frequency Response")
+plt.xlabel("Frequency (Hz)")
+plt.ylabel("Magnitude (dB)")
+plt.grid()
+
+plt.tight_layout()
+plt.show()
